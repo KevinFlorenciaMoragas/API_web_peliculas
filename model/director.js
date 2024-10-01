@@ -1,32 +1,34 @@
 const sequelize = require('../database/database.js')
 const { DataTypes } = require('sequelize')
-
-const User = sequelize.define('users',{
-    id:{
+const Director = sequelize.define('directors', {
+    id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    username: {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    lastName: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    email: {
+    photo: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    password:{
+    biography: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    active:{
-        type: DataTypes.BOOLEAN,
-        allowNull:false,
-        defaultValue: true
+    birthPlace: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
-    role:{
-        type: DataTypes.ENUM('admin','user'),
-        defaultValue: 'user'
+    birthDate: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 })
-module.exports = User
+module.exports = Director

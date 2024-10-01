@@ -7,6 +7,7 @@ const checkToken = (req,res,next) =>{
         return res.status(401).json({error: 'Unauthorized'})
     }
     try{
+        console.log(token)
         const decodedToken = jwt.verify(token,SECRET_KEY)
         next()
     }catch(error){
@@ -15,6 +16,7 @@ const checkToken = (req,res,next) =>{
 }
 const checkAdmin = (req,res,next) => {
     const token = req.cookies.token
+    console.log(token)
     if(!token){
         return res.status(401).json({error: 'Unauthorized'}) 
     }

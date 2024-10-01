@@ -36,7 +36,7 @@ async function main() {
     Movie.belongsToMany(Actor, { through: 'movie_actor' })
     Actor.belongsToMany(Movie, { through: 'movie_actor' })
     Movie.belongsToMany(Genre, { through: 'movie_genre' })
-    Genre.belongsToMany(Actor, { through: 'movie_genre' })
+    Genre.belongsToMany(Movie, { through: 'movie_genre' })
     app.listen(port, () => {
         console.log(`App running at http://localhost:${port}`);
     });

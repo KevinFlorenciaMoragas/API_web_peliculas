@@ -22,7 +22,7 @@ const checkAdmin = (req,res,next) => {
     }
     try{
         const decodedToken = jwt.verify(token,SECRET_KEY)
-        const role = decodedToken.userRole
+        const role = decodedToken.role
         if(role === "admin"){
             next()
         }else{

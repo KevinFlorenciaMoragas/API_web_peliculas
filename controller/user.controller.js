@@ -36,7 +36,6 @@ const login = async (req, res, User) => {
             return res.status(400).json({ error: "Data is empty" })
         }
         const user = await User.findOne({ where: { username } })
-        console.log(user)
         if (user.active == 0) {
             return res.status(400).json({ message: "User is not active" })
         }
@@ -44,9 +43,9 @@ const login = async (req, res, User) => {
         if (!passwordMatch) {
             return res.status(404).json({ error: "Incorrect Password" })
         }
-        const token = jwt.sign({ userId: user.id, username: user.username, userRole: user.role }, SECRET_KEY, { expiresIn: '1h' })
+        const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' })
         res.cookie('token', token)
-        return res.status(200).json({message: "User login"})
+        return res.status(200).json(token)
     } catch (error) {
         return res.status(500).json({ error: error.message })
     }

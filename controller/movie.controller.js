@@ -15,7 +15,8 @@ const getMovies = async (req, res) => {
     }
 }
 const postMovie = async (req, res) => {
-    const { movieName, duration, releaseDate, score, banner, poster, trailer, directorId, actorId, screenwritterId, genreId } = req.body
+    const { movieName, duration, releaseDate, score, banner, poster, trailer, directorId, actorsId, screenwritterId, genreId } = req.body;
+    console.log(req.body)
     try {
         const newMovie = await Movie.create({
             movieName,
@@ -25,24 +26,50 @@ const postMovie = async (req, res) => {
             banner,
             poster,
             trailer
-        })
+        });
+        if(duration < 0){
+            return res.status(400).json({message: "La duración no puede ser negativa"})
+        }
+        if(score < 0 || score > 10){
+            return res.status(400).json({message: "El score no puede ser negativo o mayor a 10"})
+        } 
+        if(!movieName || !duration || !releaseDate || !score || !banner || !poster || !trailer){
+            return res.status(400).json({message: "Faltan datos"})
+        }
+        if(!directorId){
+            return res.status(400).json({message: "Falta el director"})
+        }
+        if(!actorsId){
+            return res.status(400).json({message: "Faltan los actores"})
+        }
+        if(!screenwritterId){
+            return res.status(400).json({message: "Falta el guionista"})
+        }
+        if(!genreId){
+            return res.status(400).json({message: "Falta el género"})
+        }
+        if(releaseDate < 1900){
+            return res.status(400).json({message: "La fecha de estreno no puede ser menor a 1900"})
+        }
         // Asignar el director si se proporciona un ID
-        if (directorId && directorId.length > 0) {
-            const director = await Director.findAll({ where: { id: directorId } });
+        if (directorId) {
+            const director = await Director.findOne({ where: { id: directorId } });
+            console.log(director)
             if (director) {
-                await newMovie.addDirector(director);
+                console.log("Director encontrado")
+                await newMovie.setDirectors(director);
             } else {
                 return res.status(404).json({ message: `Director con ID ${directorId} no encontrado` });
             }
         }
 
-        // Asignar el actor si se proporciona un ID
-        if (actorId && actorId.length > 0) {
-            const actor = await Actor.findAll({ where: { id: actorId } });
-            if (actor) {
-                await newMovie.addActor(actor);
+        // Asignar los actores si se proporciona un array de IDs
+        if (actorsId && actorsId.length > 0) {
+            const actors = await Actor.findAll({ where: { id: actorsId } });
+            if (actors.length > 0) {
+                await newMovie.addActors(actors); // Asegúrate de que este método está definido en tu modelo
             } else {
-                return res.status(404).json({ message: `Actor con ID ${actorId} no encontrado` });
+                return res.status(404).json({ message: `Actores no encontrados` });
             }
         }
 
@@ -50,7 +77,7 @@ const postMovie = async (req, res) => {
         if (screenwritterId && screenwritterId.length > 0) {
             const screenwritter = await Screenwritter.findAll({ where: { id: screenwritterId } });
             if (screenwritter) {
-                await newMovie.addScreenwritter(screenwritter);
+                await newMovie.setScreenwritters(screenwritter);
             } else {
                 return res.status(404).json({ message: `Screenwriter con ID ${screenwritterId} no encontrado` });
             }
@@ -60,15 +87,15 @@ const postMovie = async (req, res) => {
         if (genreId && genreId.length > 0) {
             const genre = await Genre.findAll({ where: { id: genreId } });
             if (genre) {
-                await newMovie.addGenre(genre);
+                await newMovie.setGenres(genre);
             } else {
                 return res.status(404).json({ message: `Género con ID ${genreId} no encontrado` });
             }
         }
 
-        res.status(201).json(newMovie)
+        res.status(201).json(newMovie);
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        res.status(500).json({ error: error.message });
     }
 }
 const getRelationMovies = async (req, res) => {

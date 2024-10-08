@@ -96,8 +96,22 @@ const changePassword = async (req, res, User) => {
         return res.status(500).json({ error: error.message })
     }
 }
-
+const disableAccount = (req,res,User) => {
+    const {email} = req.body
+    try{
+        if(!email){
+            return res.status(400).json({error: "Data is empty"})
+        }
+        const user = User.findOne({where: {email}})
+        user.active = 0
+        user.save()
+        return res.status(200).json({message: "User disabled"})
+    }
+    catch(error){
+        return res.status(500).json({error: error.message})
+    }
+}
 module.exports =
 {
-    login, register, recoverPassword, changePassword
+    login, register, recoverPassword, changePassword, disableAccount
 }

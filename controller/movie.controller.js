@@ -27,29 +27,29 @@ const postMovie = async (req, res) => {
             poster,
             trailer
         });
-        if(duration < 0){
-            return res.status(400).json({message: "La duración no puede ser negativa"})
+        if (duration < 0) {
+            return res.status(400).json({ message: "La duración no puede ser negativa" })
         }
-        if(score < 0 || score > 10){
-            return res.status(400).json({message: "El score no puede ser negativo o mayor a 10"})
-        } 
-        if(!movieName || !duration || !releaseDate || !score || !banner || !poster || !trailer){
-            return res.status(400).json({message: "Faltan datos"})
+        if (score < 0 || score > 10) {
+            return res.status(400).json({ message: "El score no puede ser negativo o mayor a 10" })
         }
-        if(!directorId){
-            return res.status(400).json({message: "Falta el director"})
+        if (!movieName || !duration || !releaseDate || !score || !banner || !poster || !trailer) {
+            return res.status(400).json({ message: "Faltan datos" })
         }
-        if(!actorsId){
-            return res.status(400).json({message: "Faltan los actores"})
+        if (!directorId) {
+            return res.status(400).json({ message: "Falta el director" })
         }
-        if(!screenwritterId){
-            return res.status(400).json({message: "Falta el guionista"})
+        if (!actorsId) {
+            return res.status(400).json({ message: "Faltan los actores" })
         }
-        if(!genreId){
-            return res.status(400).json({message: "Falta el género"})
+        if (!screenwritterId) {
+            return res.status(400).json({ message: "Falta el guionista" })
         }
-        if(releaseDate < 1900){
-            return res.status(400).json({message: "La fecha de estreno no puede ser menor a 1900"})
+        if (!genreId) {
+            return res.status(400).json({ message: "Falta el género" })
+        }
+        if (releaseDate < 1900) {
+            return res.status(400).json({ message: "La fecha de estreno no puede ser menor a 1900" })
         }
         // Asignar el director si se proporciona un ID
         if (directorId) {
@@ -119,8 +119,24 @@ const getRelationMovies = async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 }
+const getMovieByName = async (req, res) => {
+    
+    console.log("Estoy en movieName")
+    const movieName = req.params.movieName
+    console.log(movieName)
+    try {
+        const movie = await Movie.findOne({ where: { movieName: movieName } })
+        if (!movie) {
+            return res.status(400).json({ message: "Movie not found" })
+        }
+        res.status(200).json(movie)
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
 module.exports = {
     getMovies,
     postMovie,
-    getRelationMovies
+    getRelationMovies,
+    getMovieByName
 }

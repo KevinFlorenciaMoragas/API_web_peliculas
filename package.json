@@ -19,7 +19,9 @@
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.15",
+    "path": "^0.12.7",
     "sequelize": "^6.37.3",
+    "sharp-multer": "^0.3.3",
     "uuid": "^10.0.0"
   }
 }

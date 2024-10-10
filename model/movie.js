@@ -11,12 +11,16 @@ const Movie = sequelize.define('movies', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    synopsis: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     duration: {
         type: DataTypes.INTEGER,
         allowNull: true
     },
     releaseDate: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true
     },
     score: {

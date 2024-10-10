@@ -14,8 +14,22 @@ const getMovies = async (req, res) => {
         res.status(500).json({ error: error.message })
     }
 }
+const getMovieById = async (req, res) => {
+    const id = req.params.id
+    try {
+        const movie = await Movie.findByPk(id, {
+            include: [Director, Actor, Screenwritter, Genre]
+        })
+        if (!movie) {
+            return res.status(404).json({ message: "Movie not found" })
+        }
+        res.json(movie)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
 const postMovie = async (req, res) => {
-    const { movieName, duration, releaseDate, score, banner, poster, trailer, directorId, actorsId, screenwritterId, genreId } = req.body;
+    const { movieName, duration, synopsis, releaseDate, score, banner, poster, trailer, directorId, actorsId, screenwritterId, genreId } = req.body;
     console.log(req.body)
     try {
         const newMovie = await Movie.create({
@@ -25,6 +39,7 @@ const postMovie = async (req, res) => {
             score,
             banner,
             poster,
+            synopsis,
             trailer
         });
         if (duration < 0) {
@@ -100,8 +115,11 @@ const postMovie = async (req, res) => {
 }
 const getRelationMovies = async (req, res) => {
     const { genreId, id } = req.body
+    console.log("Genero: ",genreId, " ID: ",id)
     try {
+        console.log("Dentro del Try")
         if (genreId && genreId.length > 0) {
+            console.log("Dentro del if")
             const movies = await Movie.findAll({
                 include: [{
                     model: Genre,
@@ -113,6 +131,7 @@ const getRelationMovies = async (req, res) => {
                     }
                 }
             });
+            console.log(movies)
             res.status(200).json(movies)
         }
     } catch (error) {
@@ -120,7 +139,7 @@ const getRelationMovies = async (req, res) => {
     }
 }
 const getMovieByName = async (req, res) => {
-    
+
     console.log("Estoy en movieName")
     const movieName = req.params.movieName
     console.log(movieName)
@@ -138,5 +157,6 @@ module.exports = {
     getMovies,
     postMovie,
     getRelationMovies,
-    getMovieByName
+    getMovieByName,
+    getMovieById
 }

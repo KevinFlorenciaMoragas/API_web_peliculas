@@ -25,7 +25,7 @@ const movieWatched = async (req, res) => {
             return res.status(200).json({ message: "Watched created" })
         }
     } catch (error) {
-        return res.status(500).json({message: error.message})
+        return res.status(500).json({ message: error.message })
     }
 
 }
@@ -79,12 +79,12 @@ const movieToSee = async (req, res) => {
             return res.status(200).json({ message: "To see created" })
         }
     } catch (error) {
-        return res.status(500).json({message: error.message})
+        return res.status(500).json({ message: error.message })
     }
 
 }
-const movieLike = async(req,res) => {
-    
+const movieLike = async (req, res) => {
+
     const { userId, movieId, like } = req.body
 
     if (!userId) {
@@ -106,7 +106,7 @@ const movieLike = async(req,res) => {
             return res.status(200).json({ message: "Like created" })
         }
     } catch (error) {
-        return res.status(500).json({message: error.message})
+        return res.status(500).json({ message: error.message })
     }
 
 }

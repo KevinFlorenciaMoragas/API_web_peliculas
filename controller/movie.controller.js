@@ -115,7 +115,6 @@ const postMovie = async (req, res) => {
 }
 const getRelationMovies = async (req, res) => {
     const { genreId, id } = req.body
-    console.log("Genero: ",genreId, " ID: ",id)
     try {
         console.log("Dentro del Try")
         if (genreId && genreId.length > 0) {

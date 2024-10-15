@@ -86,7 +86,8 @@ const movieToSee = async (req, res) => {
 const movieLike = async (req, res) => {
 
     const { userId, movieId, like } = req.body
-
+    console.log("Estoy en like")
+    console.log(req.body)
     if (!userId) {
         return res.status(404).json({ error: "User is not defined" })
     }
@@ -110,11 +111,25 @@ const movieLike = async (req, res) => {
     }
 
 }
-
+const getUserMovie = async (req, res) => {
+    const { userId, movieId } = req.params
+    try {
+        const userMovie = await UserMovies.findOne({
+            where: { userId: userId, movieId: movieId }
+        })
+        if (!userMovie) {
+            return res.status(404).json({ message: "User movie not found" })
+        }
+        res.status(200).json(userMovie)
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
 
 module.exports = {
     movieComment,
     movieWatched,
     movieLike,
-    movieToSee
+    movieToSee,
+    getUserMovie
 }

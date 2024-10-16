@@ -114,7 +114,7 @@ const postMovie = async (req, res) => {
     }
 }
 const getRelationMovies = async (req, res) => {
-    const { genreId, id } = req.body
+    const { genreId, movieId } = req.params
     try {
         console.log("Dentro del Try")
         if (genreId && genreId.length > 0) {
@@ -126,7 +126,7 @@ const getRelationMovies = async (req, res) => {
                 }],
                 where: {
                     id: {
-                        [Op.not]: id
+                        [Op.not]: movieId
                     }
                 }
             });

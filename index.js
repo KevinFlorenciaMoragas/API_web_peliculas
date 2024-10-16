@@ -9,7 +9,7 @@ const Actor = require('./model/actor.js')
 const Screenwritter = require('./model/screenwritter.js')
 const Movie = require('./model/movie.js')
 const Genre = require('./model/genre.js')
-const UserMovies = require('./model/user-movies.js')
+const UserMovies = require('./model/UserMovies.js')
 const userRoutes = require('./routes/user.routes.js');
 const directorRoutes = require('./routes/director.routes.js')
 const movieRoutes = require('./routes/movie.routes.js')
@@ -43,8 +43,10 @@ async function main() {
     Actor.belongsToMany(Movie, { through: 'movie_actor' })
     Movie.belongsToMany(Genre, { through: 'movie_genre' })
     Genre.belongsToMany(Movie, { through: 'movie_genre' })
-    User.belongsToMany(Movie, { through: 'user-movies' })
-    Movie.belongsToMany(User, { through: 'user-movies' })
+    User.hasMany(UserMovies);
+    UserMovies.belongsTo(User);
+    Movie.hasMany(UserMovies)
+    UserMovies.belongsTo(Movie);
     app.listen(port, () => {
         console.log(`App running at http://localhost:${port}`);
     });

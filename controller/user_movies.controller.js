@@ -1,6 +1,6 @@
 const User = require('../model/user')
 const Movie = require('../model/movie')
-const UserMovies = require('../model/user-movies')
+const UserMovies = require('../model/UserMovies')
 
 const movieWatched = async (req, res) => {
 
@@ -21,7 +21,7 @@ const movieWatched = async (req, res) => {
             await userMovie.save()
             return res.status(200).json({ message: "Update ok" })
         } else {
-            await userMovie.save(req.body)
+            const newUserMovie = await UserMovies.create({ userId, movieId, watched });
             return res.status(200).json({ message: "Watched created" })
         }
     } catch (error) {
@@ -75,7 +75,7 @@ const movieToSee = async (req, res) => {
             await userMovie.save()
             return res.status(200).json({ message: "Update ok" })
         } else {
-            await userMovie.save(req.body)
+            const newUserMovie = await UserMovies.create({ userId, movieId, toSee });
             return res.status(200).json({ message: "To see created" })
         }
     } catch (error) {
@@ -103,7 +103,8 @@ const movieLike = async (req, res) => {
             await userMovie.save()
             return res.status(200).json({ message: "Update ok" })
         } else {
-            await userMovie.save(req.body)
+            console.log("Estoy en el else")
+            const newUserMovie = await UserMovies.create({ userId, movieId, like });
             return res.status(200).json({ message: "Like created" })
         }
     } catch (error) {
@@ -125,11 +126,27 @@ const getUserMovie = async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 }
+const getMovieComments = async (req, res) => {
+    const { movieId } = req.params
+    try {
+        const comments = await UserMovies.findAll({
+            where: { movieId: movieId },
+            include: [{model: User}]
+        })
+        if (!comments) {
+            return res.status(404).json({ message: "Comments not found" })
+        }
+        res.status(200).json(comments)
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
 
 module.exports = {
     movieComment,
     movieWatched,
     movieLike,
     movieToSee,
-    getUserMovie
+    getUserMovie,
+    getMovieComments
 }

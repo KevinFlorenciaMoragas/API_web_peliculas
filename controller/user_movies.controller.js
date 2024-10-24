@@ -1,6 +1,7 @@
 const User = require('../model/user')
 const Movie = require('../model/movie')
 const UserMovies = require('../model/UserMovies')
+const { Op } = require('sequelize')
 
 const movieWatched = async (req, res) => {
 
@@ -131,7 +132,7 @@ const getMovieComments = async (req, res) => {
     try {
         const comments = await UserMovies.findAll({
             where: { movieId: movieId },
-            include: [{model: User}]
+            include: [{ model: User }]
         })
         if (!comments) {
             return res.status(404).json({ message: "Comments not found" })
@@ -141,12 +142,57 @@ const getMovieComments = async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 }
+const getMovieCountByMovieId = async (req, res) => {
+    const { movieId } = req.params
+    let movieCounts = {
+        movieId: movieId,
+        like: 0,
+        watched: 0,
+        toSee: 0
+    }
+    try {
+        const movieLike = await UserMovies.count(
+            {
+                where: {
+                    movieId: movieId,
+                    like: true
+                }
+            },
 
+        )
+        const movieWatched = await UserMovies.count(
+            {
+                where: {
+                    movieId: movieId,
+                    watched: true
+                }
+            }
+        )
+        const movieToSee = await UserMovies.count(
+            {
+                where: {
+                    movieId: movieId,
+                    toSee: true
+                }
+            }
+        )
+        movieCounts = {
+            movieId: movieId,
+            like: movieLike,
+            watched: movieWatched,
+            toSee: movieToSee
+        }
+        return res.status(200).json(movieCounts)
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
 module.exports = {
     movieComment,
     movieWatched,
     movieLike,
     movieToSee,
     getUserMovie,
-    getMovieComments
+    getMovieComments,
+    getMovieCountByMovieId
 }

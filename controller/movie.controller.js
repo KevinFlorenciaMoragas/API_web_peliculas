@@ -3,7 +3,12 @@ const Director = require('../model/director.js')
 const Actor = require('../model/actor.js')
 const Screenwritter = require('../model/screenwritter.js')
 const Genre = require('../model/genre.js')
+const UserMovie = require('../model/UserMovies.js')
 const { Op } = require('sequelize')
+const sequelize = require('../database/database.js')
+const {
+    getMovieCountByMovieId
+} = require('./user_movies.controller.js')
 const getMovies = async (req, res) => {
     try {
         const movies = await Movie.findAll({
@@ -23,7 +28,97 @@ const getMovieById = async (req, res) => {
         if (!movie) {
             return res.status(404).json({ message: "Movie not found" })
         }
+        let visitTime = movie.visitTime + 1
+        await Movie.update({ visitTime: visitTime }, { where: { id: id } })
+        
         res.json(movie)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
+const countMovies = async (req,res) => {
+    try{
+        console.log("Estoy en count")
+        const count = await Movie.count()
+        console.log(count)
+        if(!count){
+            return res.status(404).json({message: "Count not found"})
+        }
+        res.json(count)
+    }catch(error){
+        return res.status(500).json({error: error.message})
+    }
+}
+const getMovieByDirector = async (req, res) => {
+    const directorId = req.params.directorId
+    try {
+        const movie = await Movie.findAll({
+            include: [Actor, Genre, Screenwritter, 
+                {model: Director,
+                 where: {id: directorId}}
+                ],
+                order: [['score','DESC']]
+        })
+        if (!movie) {
+            return res.status(404).json({ message: "Movie not found" })
+        }
+        res.status(200).json(movie)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
+const getMovieByActor = async (req, res) => {
+    const actorId = req.params.actorId
+    try {
+        const movie = await Movie.findAll({
+            include: [Director, Genre, Screenwritter, 
+                {model: Actor,
+                 where: {id: actorId}}
+                ],
+                order: [['score','DESC']]
+        })
+        if (!movie) {
+            return res.status(404).json({ message: "Movie not found" })
+        }
+        res.status(200).json(movie)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
+
+const getMovieByScreenwritter = async (req, res) => {
+    const screenwriterId = req.params.screenwriterId
+    try {
+        const movie = await Movie.findAll({
+            include: [Director, Genre, Actor, 
+                {model: Screenwritter,
+                 where: {id: screenwriterId}}
+                ],
+                order: [['score','DESC']]
+        })
+        if (!movie) {
+            return res.status(404).json({ message: "Movie not found" })
+        }
+        res.status(200).json(movie)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
+
+const getMovieByGenre = async (req, res) => {
+    const genreId = req.params.genreId
+    try {
+        const movie = await Movie.findAll({
+            include: [Director, Actor, Screenwritter, 
+                {model: Genre,
+                 where: {id: genreId}}
+                ],
+                order: [['score','DESC']]
+        })
+        if (!movie) {
+            return res.status(404).json({ message: "Movie not found" })
+        }
+        res.status(200).json(movie)
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
@@ -66,7 +161,6 @@ const postMovie = async (req, res) => {
         if (releaseDate < 1900) {
             return res.status(400).json({ message: "La fecha de estreno no puede ser menor a 1900" })
         }
-        // Asignar el director si se proporciona un ID
         if (directorId) {
             const director = await Director.findOne({ where: { id: directorId } });
             console.log(director)
@@ -77,8 +171,6 @@ const postMovie = async (req, res) => {
                 return res.status(404).json({ message: `Director con ID ${directorId} no encontrado` });
             }
         }
-
-        // Asignar los actores si se proporciona un array de IDs
         if (actorsId && actorsId.length > 0) {
             const actors = await Actor.findAll({ where: { id: actorsId } });
             if (actors.length > 0) {
@@ -87,8 +179,6 @@ const postMovie = async (req, res) => {
                 return res.status(404).json({ message: `Actores no encontrados` });
             }
         }
-
-        // Asignar el screenwriter si se proporciona un ID
         if (screenwritterId && screenwritterId.length > 0) {
             const screenwritter = await Screenwritter.findAll({ where: { id: screenwritterId } });
             if (screenwritter) {
@@ -98,7 +188,6 @@ const postMovie = async (req, res) => {
             }
         }
 
-        // Asignar el género si se proporciona un ID
         if (genreId && genreId.length > 0) {
             const genre = await Genre.findAll({ where: { id: genreId } });
             if (genre) {
@@ -116,13 +205,14 @@ const postMovie = async (req, res) => {
 const getRelationMovies = async (req, res) => {
     const { genreId, movieId } = req.params
     try {
-        console.log("Dentro del Try")
         if (genreId && genreId.length > 0) {
-            console.log("Dentro del if")
             const movies = await Movie.findAll({
                 include: [{
                     model: Genre,
-                    where: { id: genreId }
+                    where: { id: genreId },
+                    
+                },{
+                    model:Director
                 }],
                 where: {
                     id: {
@@ -138,15 +228,20 @@ const getRelationMovies = async (req, res) => {
     }
 }
 const getMovieByName = async (req, res) => {
-
-    console.log("Estoy en movieName")
     const movieName = req.params.movieName
-    console.log(movieName)
     try {
-        const movie = await Movie.findOne({ where: { movieName: movieName } })
+        let movie = await Movie.findAll({
+            include: [Director, Actor, Screenwritter, Genre],
+            where: {
+                movieName: {
+                    [Op.like]: `%${movieName}%`
+                }
+            }
+        })
         if (!movie) {
             return res.status(400).json({ message: "Movie not found" })
         }
+        movie = JSON.parse(JSON.stringify(movie))
         res.status(200).json(movie)
     } catch (error) {
         return res.status(500).json({ message: error.message })
@@ -157,5 +252,10 @@ module.exports = {
     postMovie,
     getRelationMovies,
     getMovieByName,
-    getMovieById
+    getMovieById,
+    getMovieByDirector,
+    getMovieByActor,
+    getMovieByScreenwritter,
+    getMovieByGenre,
+    countMovies
 }

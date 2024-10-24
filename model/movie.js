@@ -38,6 +38,10 @@ const Movie = sequelize.define('movies', {
     trailer: {
         type: DataTypes.STRING,
         allowNull: true
-    }
+    },
+    visitTime: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
 })
 module.exports = Movie

@@ -1,4 +1,4 @@
-const SECRET_KEY = require("../Keys/key.js")
+const SECRET_KEY = process.env.SECRET_KEY
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const emailValidation = require("../functions/validateEmail.js")
@@ -43,6 +43,7 @@ const login = async (req, res, User) => {
         if (!passwordMatch) {
             return res.status(404).json({ error: "Incorrect Password" })
         }
+        console.log(SECRET_KEY)
         const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' })
         res.cookie('token', token)
         return res.status(200).json(token)

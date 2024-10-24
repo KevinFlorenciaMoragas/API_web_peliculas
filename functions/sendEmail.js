@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer')
-const pass = require('../Keys/password.js')
-const user = require('../Keys/email.js')
+const pass = process.env.PASS
+const user = process.env.EMAIL
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth:{

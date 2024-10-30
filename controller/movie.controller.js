@@ -175,7 +175,7 @@ const postMovie = async (req, res) => {
         if (actorsId && actorsId.length > 0) {
             const actors = await Actor.findAll({ where: { id: actorsId } });
             if (actors.length > 0) {
-                await newMovie.addActors(actors); // Asegúrate de que este método está definido en tu modelo
+                await newMovie.addActors(actors); 
             } else {
                 return res.status(404).json({ message: `Actores no encontrados` });
             }

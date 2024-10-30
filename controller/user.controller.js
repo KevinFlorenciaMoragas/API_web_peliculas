@@ -29,6 +29,7 @@ const register = async (req, res, User) => {
 const login = async (req, res, User) => {
     const { username, password } = req.body
     try {
+        
         if (!username || !password) {
             return res.status(400).json({ error: "Data is empty" })
         }

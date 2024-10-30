@@ -50,6 +50,6 @@ async function main() {
     app.listen(port, () => {
         console.log(`App running at http://localhost:${port}`);
     });
-    await sequelize.sync({ alter: true })
+    await sequelize.sync({ alter: false })
 }
 main();

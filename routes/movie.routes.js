@@ -26,7 +26,7 @@ const {
     checkAdmin,
     checkToken
 } = require("../middleware/checkToken.js")
-router.get('/movie', async (req, res) => await getMovies(req, res, Movie))
+router.get('/movie/order/:order', async (req, res) => await getMovies(req, res, Movie))
 router.get('/movie/:id', async (req, res) => await getMovieById(req, res, Movie))
 router.get('/movie/suggestions/:movieName', async(req,res) => await getMovieByName(req,res,Movie))
 router.get('/movie/genre/:genreId',async(req,res) => await getMovieByGenre(req,res,Movie))

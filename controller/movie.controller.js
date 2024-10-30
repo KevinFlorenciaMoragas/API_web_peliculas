@@ -10,9 +10,10 @@ const {
     getMovieCountByMovieId
 } = require('./user_movies.controller.js')
 const getMovies = async (req, res) => {
+    const order = req.params.order
     try {
         const movies = await Movie.findAll({
-            include: [Director, Actor, Screenwritter, Genre]
+            include: [Director, Actor, Screenwritter, Genre], order: [[order,'DESC']]
         })
         res.json(movies)
     } catch (error) {

@@ -5,7 +5,6 @@ const emailValidation = require("../functions/validateEmail.js")
 const sendPasswordChangeEmail = require("../functions/sendEmail.js")
 const register = async (req, res, User) => {
     try {
-        console.log(req.body)
         let { username, email, password, active } = req.body
 
         if (!username || !password || !active || !email) {
@@ -18,9 +17,7 @@ const register = async (req, res, User) => {
         if (!emailValidation(email)) {
             return res.status(400).json({ error: "Email is not valid" })
         }
-        console.log("La contraseña es" + password)
         const passwordEncrypt = bcrypt.hashSync(password, 10)
-        console.log("Password encriptada" + passwordEncrypt)
         password = passwordEncrypt
         const user = await User.create({ username, password, active, email })
         return res.status(200).json({ message: "user created" })
@@ -43,7 +40,6 @@ const login = async (req, res, User) => {
         if (!passwordMatch) {
             return res.status(404).json({ error: "Incorrect Password" })
         }
-        console.log(SECRET_KEY)
         const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' })
         res.cookie('token', token)
         return res.status(200).json(token)
@@ -57,19 +53,18 @@ const recoverPassword = async (req, res, User) => {
         if (!emailValidation(email)) {
             return res.status(400).json({ error: "Email is not valid" })
         }
-        console.log(email)
         let userExist = await User.findOne({ where: { email } })
         if (!userExist) {
             return res.status(400).json({ error: "User not found" })
         }
         let newPassword = Math.floor(Math.random() * (9999999 - 1000000 + 1)) + 1000000;
-        console.log(newPassword)
         newPassword = newPassword.toString()
         const newPasswordEncrypt = bcrypt.hashSync(newPassword, 10)
-        await sendPasswordChangeEmail(email, newPassword)
+        console.log(newPasswordEncrypt)
+        // await sendPasswordChangeEmail(email, newPassword)
         userExist.password = newPasswordEncrypt
         await userExist.save()
-        return res.status(200).json({ message: "Password chaanged" })
+        return res.status(200).json({ newPassword })
 
     } catch (error) {
         return res.status(500).json({ error: error.message })
@@ -77,6 +72,7 @@ const recoverPassword = async (req, res, User) => {
 }
 const changePassword = async (req, res, User) => {
     let { email, newPassword, number } = req.body
+    console.log("Email",email , " newPassowrd", newPassword, " number ", number)
     try {
         if (!email || !newPassword || !number) {
             return res.status(400).json({ error: "Data is empty" })

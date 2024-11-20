@@ -67,6 +67,56 @@ const deleteItem = async (req, res, Model) => {
         res.status(404).json({ error: error.message })
     }
 }
+const changeBannerPlaceholder = async (req, res, Model) => {
+    try {
+        const array = await Model.findAll()
+        const placeholder = "https://via.placeholder.com/800x300"
+        array.forEach(element => {
+            if(element.banner != placeholder){
+                element.banner = placeholder
+                element.save() 
+            }               
+        });
+        return res.status(200).json({ message: "Banners changed succesfully" })
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+}
+const changePosterPlaceholder = async (req, res, Model) => {
+    try {
+        const array = await Model.findAll()
+        const placeholder = "https://via.placeholder.com/300x450"
+        array.forEach(element => {
+            if(element.poster != placeholder){
+                element.poster = placeholder
+                element.save() 
+            }               
+        });
+        return res.status(200).json({ message: "Banners changed succesfully" })
+
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+}
+const changeImagePlaceholder = async(req,res,Models) => {
+    try{
+        const placeholder = "https://via.placeholder.com/150"
+        for (Model of Models){
+            const array = await Model.findAll() 
+            array.forEach(e => {
+                if(e.photo != placeholder){
+                    e.photo = placeholder
+                    e.save()
+                }
+            })
+        }
+        res.status(200).json({message: "Photo changed succesfully"})
+    }catch(error){
+        res.status(400).json({error: error.message})
+    }
+}
 
 module.exports = {
     createItem,
@@ -74,5 +124,8 @@ module.exports = {
     readItem,
     deleteItem,
     updateItem,
-    createItemWithImage
+    createItemWithImage,
+    changeBannerPlaceholder,
+    changePosterPlaceholder,
+    changeImagePlaceholder
 }

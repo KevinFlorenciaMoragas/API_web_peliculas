@@ -10,12 +10,25 @@ const {
     getMovieCountByMovieId
 } = require('./user_movies.controller.js')
 const getMovies = async (req, res) => {
-    const order = req.params.order
+    const { order = 'movieName', page = 1, limit = 10 } = req.query; 
+    const pageNumber = parseInt(page, 10);
+    const pageLimit = parseInt(limit, 10);
     try {
-        const movies = await Movie.findAll({
-            include: [Director, Actor, Screenwritter, Genre], order: [[order,'DESC']]
-        })
-        res.json(movies)
+        const movies = await Movie.findAndCountAll({
+            include: [Director, Actor, Screenwritter, Genre],
+            order: [[order, 'ASC']],
+            limit: pageLimit,
+            offset: (pageNumber - 1) * pageLimit
+        });
+
+        const totalPages = Math.ceil(movies.count / pageLimit);
+
+        res.json({
+            currentPage: pageNumber,
+            totalPages,
+            totalMovies: movies.count,
+            movies: movies.rows
+        });
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
@@ -58,7 +71,7 @@ const getMovieByDirector = async (req, res) => {
                 {model: Director,
                  where: {id: directorId}}
                 ],
-                order: [['score','DESC']]
+                order: [['score','ASC']]
         })
         if (!movie) {
             return res.status(404).json({ message: "Movie not found" })
@@ -76,7 +89,7 @@ const getMovieByActor = async (req, res) => {
                 {model: Actor,
                  where: {id: actorId}}
                 ],
-                order: [['score','DESC']]
+                order: [['score','ASC']]
         })
         if (!movie) {
             return res.status(404).json({ message: "Movie not found" })
@@ -95,7 +108,7 @@ const getMovieByScreenwritter = async (req, res) => {
                 {model: Screenwritter,
                  where: {id: screenwriterId}}
                 ],
-                order: [['score','DESC']]
+                order: [['score','ASC']]
         })
         if (!movie) {
             return res.status(404).json({ message: "Movie not found" })
@@ -114,7 +127,7 @@ const getMovieByGenre = async (req, res) => {
                 {model: Genre,
                  where: {id: genreId}}
                 ],
-                order: [['score','DESC']]
+                order: [['score','ASC']]
         })
         if (!movie) {
             return res.status(404).json({ message: "Movie not found" })

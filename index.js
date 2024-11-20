@@ -36,14 +36,14 @@ async function main() {
     app.use('/api', genreRoutes)
     app.use('/api', userMoviesRoutes)
 
-    Movie.belongsToMany(Screenwritter, { through: 'movie_screenwritter' })
-    Screenwritter.belongsToMany(Movie, { through: 'movie_screenwritter' })
-    Movie.belongsToMany(Director, { through: 'movie_director' })
-    Director.belongsToMany(Movie, { through: 'movie_director' })
-    Movie.belongsToMany(Actor, { through: 'movie_actor' })
-    Actor.belongsToMany(Movie, { through: 'movie_actor' })
-    Movie.belongsToMany(Genre, { through: 'movie_genre' })
-    Genre.belongsToMany(Movie, { through: 'movie_genre' })
+    Movie.belongsToMany(Screenwritter, { through: 'movie_screenwritter', timestamps: false })
+    Screenwritter.belongsToMany(Movie, { through: 'movie_screenwritter', timestamps: false  })
+    Movie.belongsToMany(Director, { through: 'movie_director', timestamps: false  })
+    Director.belongsToMany(Movie, { through: 'movie_director', timestamps: false  })
+    Movie.belongsToMany(Actor, { through: 'movie_actor', timestamps: false  })
+    Actor.belongsToMany(Movie, { through: 'movie_actor', timestamps: false  })
+    Movie.belongsToMany(Genre, { through: 'movie_genre', timestamps: false  })
+    Genre.belongsToMany(Movie, { through: 'movie_genre', timestamps: false  })
     User.hasMany(UserMovies);
     UserMovies.belongsTo(User);
     Movie.hasMany(UserMovies)

@@ -7,9 +7,12 @@ const {
     createItem,
     deleteItem,
     updateItem,
-    createItemWithImage
+    createItemWithImage,
+    changeImagePlaceholder
 } = require('../controller/generic.controller.js')
 const Actor = require("../model/actor.js")
+const Director = require('../model/director.js')
+const Screenwritter = require('../model/screenwritter.js')
 const {
     checkAdmin,
     checkToken
@@ -21,5 +24,6 @@ router.get('/actor/:id', async (req, res) => await readItem(req, res, Actor))
 router.post('/actor',uploadImages , async (req, res) => await createItem(req, res, Actor))
 router.put('/actor/:id', checkAdmin, async (req, res) => await updateItem(req, res, Actor))
 router.delete('/actor/:id', checkAdmin, async (req, res) => await deleteItem(req, res, Actor))
+router.put('/photo', async(req,res)  => await changeImagePlaceholder(req,res,[Actor, Director,Screenwritter]))
 
 module.exports = router

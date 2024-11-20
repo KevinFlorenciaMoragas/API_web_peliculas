@@ -61,7 +61,6 @@ const recoverPassword = async (req, res, User) => {
         let newPassword = Math.floor(Math.random() * (9999999 - 1000000 + 1)) + 1000000;
         newPassword = newPassword.toString()
         const newPasswordEncrypt = bcrypt.hashSync(newPassword, 10)
-        console.log(newPasswordEncrypt)
         // await sendPasswordChangeEmail(email, newPassword)
         userExist.password = newPasswordEncrypt
         await userExist.save()
